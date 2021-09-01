@@ -25,19 +25,36 @@ module.exports = {
         res.render('index')
     },
     
-    create: function async (req, res){
+    create: async function (req, res){
         const body = req.body
-        // console.log(body)
         
-        const filePath = path.join(process.cwd()+'/resources/docs/', 'GTC-Application.docx')
+        const filePath = path.join(process.cwd()+'/resources/docs/', 'NOTICE.txt')
+        const fleExten = path.extname(filePath)
+        
+        let _mimeType;
+        switch (fleExten) {
+            case '.doc':
+                _mimeType = 'application/msword'
+                break;
+            case '.docx':
+                _mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                break;
+            case '.pdf':
+                _mimeType = 'application/pdf'
+                break;
+            default:
+                _mimeType = 'application/msword'
+                break;
+        }
+        
         try {
             const response = await drive.files.create({
                 requestBody:{
                     name: 'GTC_Application',
-                    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    mimeType: _mimeType
                 },
                 media:{
-                    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    mimeType: _mimeType,
                     body: fs.createReadStream(filePath)
                 }
             })
